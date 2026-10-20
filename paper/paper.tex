@@ -72,7 +72,7 @@ Approach & Main idea & Examples \\
 1. League table & Points for each result over a season in which every team plays every other team & Premier League, NBA, NHL \\
 2. Tournament points & Fixed points by event and round reached, added up over a time window & ATP and WTA rankings; UEFA club coefficients; ISU World Standings \\
 3. Elo rating & A rating that moves after every match by the actual minus the expected result & FIDE chess ratings; FIFA Men's World Ranking since 2018 \\
-4. Network rating & One calculation over the whole directed graph of results & PageRank and WPR; Colley Matrix (college football) \\
+4. Network rating & One calculation over the whole directed graph of results & Standard PageRank and WPR; Colley Matrix (college football) \\
 5. Judged score & Judges score each performance; the highest total wins & Figure skating; gymnastics \\
 \bottomrule
 \end{tabularx}
@@ -84,7 +84,7 @@ Approach & Main idea & Examples \\
 
 \paragraph{3. Elo ratings.} Arpad Elo designed his system for chess \citep{elo1978}, and FIDE adopted it in 1970 \citep{wiki_elo}. After each match a rating changes by $K(S-E)$, where $S$ is the actual and $E$ the expected result, so a win over a stronger opponent earns more. FIFA has used an Elo-type method for its men's ranking since 16 August 2018 \citep{wiki_fifa}. In tennis, Elo is used by analysts rather than by the ATP \citep{fivethirtyeight2016,kovalchik2016}. The ATP ranking is \emph{not} an Elo rating: its points depend on the tournament and the round reached, not on the strength of the opponents beaten (the only exception is the United Cup, where points per win depend on the opponent's ranking \citep{wiki_atp}).
 
-\paragraph{4. Network ratings.} These methods solve one problem over the whole directed graph of results: eigenvector methods \citep{keener1993}, direct and indirect wins \citep{park2005}, the Colley Matrix used in college football's Bowl Championship Series \citep{colley2002,wiki_colley}, and PageRank and WPR \citep{radicchi2011,govan2008,lazova2015}.
+\paragraph{4. Network ratings.} These methods solve one problem over the whole directed graph of results: eigenvector methods \citep{keener1993}, direct and indirect wins \citep{park2005}, the Colley Matrix used in college football's Bowl Championship Series \citep{colley2002,wiki_colley}, and standard PageRank and WPR \citep{radicchi2011,govan2008,lazova2015}.
 
 \paragraph{5. Judged scores.} In figure skating, competitors do not play each other. The ISU Judging System, used since 2004, scores each element as a base value plus a grade of execution and adds program component scores \citep{wiki_ijs}. Event results then feed the World Standings, so skating combines approaches 5 and 2.
 
@@ -365,7 +365,7 @@ As a first step beyond win counts, we weighted each win by the importance of the
 
 \begin{itemize}
   \item \textbf{When is WPR better than the ATP ranking?} Identify the situations in which each method gives the more sensible ranking, for example players returning from injury, players with few but strong wins, and surfaces.
-  \item \textbf{Learned weights.} Learn the edge weights (tournament, round, surface, score, recency) from data instead of choosing them, including AI-based approaches.
+  \item \textbf{Learned weights.} Learn the weights of the directed edges (tournament, round, surface, score, recency) from data instead of choosing them, including AI-based approaches.
   \item \textbf{Time.} Let older matches count less, so that the directed graph can span more than one season \citep{motegi2012}.
   \item \textbf{More sports.} Turn each figure-skating event into pairwise results between skaters, so that WPR can be applied to a sport without head-to-head matches, and find open data for boxing.
 \end{itemize}
