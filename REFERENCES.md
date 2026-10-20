@@ -2,6 +2,8 @@
 
 ## Network rankings and PageRank in sports
 - Brin, S., & Page, L. (1998). The anatomy of a large-scale hypertextual Web search engine. *Computer Networks and ISDN Systems*, 30(1–7), 107–117.
+- Xing, W., & Ghorbani, A. (2004). Weighted PageRank algorithm. *Proceedings of the Second Annual Conference on Communication Networks and Services Research*, IEEE.
+- Govan, A. Y., Meyer, C. D., & Albright, R. (2008). [Generalizing Google's PageRank to rank National Football League teams](https://support.sas.com/resources/papers/proceedings/pdfs/sgf2008/151-2008.pdf). *SAS Global Forum 2008*, Paper 151-2008.
 - Radicchi, F. (2011). [Who is the best player ever? A complex network analysis of the history of professional tennis](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0017249). *PLoS ONE*, 6(2), e17249.
 - Dingle, N., Knottenbelt, W., & Spanias, D. (2013). [On the (Page) Ranking of Professional Tennis Players](https://link.springer.com/chapter/10.1007/978-3-642-36781-6_17). In *Computer Performance Engineering*, Springer.
 - Motegi, S., & Masuda, N. (2012). [A network-based dynamical ranking system for competitive sports](https://www.nature.com/articles/srep00904). *Scientific Reports*, 2, 904.
@@ -26,8 +28,12 @@
 ## Ranking rules and sports background (accessed 13 October 2026)
 - ATP Tour (2020). [ATP announces adjustments to FedEx ATP Rankings](https://www.atptour.com/-/media/sites/atp-tour/press/press-releases/atp-announces-adjustments-to-fedex-atp-rankings.pdf). Press release, 6 July 2020.
 - Tennis Majors (2021). [ATP Tour ranking points to be added and dropped as per traditional method starting August 23](https://tennismajors.com/atp/atp-tour-ranking-points-to-be-added-and-dropped-as-per-traditional-method-starting-august-23-443662.html). 5 August 2021.
-- Wikipedia: [ATP rankings](https://en.wikipedia.org/wiki/ATP_rankings) · [FIFA Men's World Ranking](https://en.wikipedia.org/wiki/FIFA_Men%27s_World_Ranking) · [UEFA coefficient](https://en.wikipedia.org/wiki/UEFA_coefficient) · [Elo rating system](https://en.wikipedia.org/wiki/Elo_rating_system) · [Three points for a win](https://en.wikipedia.org/wiki/Three_points_for_a_win) · [ISU Judging System](https://en.wikipedia.org/wiki/ISU_Judging_System) · [ISU World Standings](https://en.wikipedia.org/wiki/ISU_World_Standings_and_Season%27s_World_Ranking) · [Colley Matrix](https://en.wikipedia.org/wiki/Colley_Matrix) · [2024–25 UEFA Champions League](https://en.wikipedia.org/wiki/2024%E2%80%9325_UEFA_Champions_League) · [2025–26 Premier League](https://en.wikipedia.org/wiki/2025%E2%80%9326_Premier_League)
+- Wikipedia: [ATP rankings](https://en.wikipedia.org/wiki/ATP_rankings) · [FIFA Men's World Ranking](https://en.wikipedia.org/wiki/FIFA_Men%27s_World_Ranking) · [UEFA coefficient](https://en.wikipedia.org/wiki/UEFA_coefficient) · [Elo rating system](https://en.wikipedia.org/wiki/Elo_rating_system) · [Three points for a win](https://en.wikipedia.org/wiki/Three_points_for_a_win) · [ISU Judging System](https://en.wikipedia.org/wiki/ISU_Judging_System) · [ISU World Standings](https://en.wikipedia.org/wiki/ISU_World_Standings_and_Season%27s_World_Ranking) · [Colley Matrix](https://en.wikipedia.org/wiki/Colley_Matrix) · [2024–25 UEFA Champions League](https://en.wikipedia.org/wiki/2024%E2%80%9325_UEFA_Champions_League) · [2025–26 Premier League](https://en.wikipedia.org/wiki/2025%E2%80%9326_Premier_League) · [2025–26 NHL season](https://en.wikipedia.org/wiki/2025%E2%80%9326_NHL_season)
 
 ## Data
 - Sackmann, J. [tennis_atp: ATP Tennis Rankings, Results, and Stats](https://github.com/JeffSackmann/tennis_atp). CC BY-NC-SA 4.0.
 - [datasets/football-datasets](https://github.com/datasets/football-datasets) — Premier League results.
+- [nflverse/nfldata](https://github.com/nflverse/nfldata) — NFL results.
+- [sportsdataverse/hoopR-nba-data](https://github.com/sportsdataverse/hoopR-nba-data) — NBA results.
+- [sportsdataverse/fastRhockey-nhl-data](https://github.com/sportsdataverse/fastRhockey-nhl-data) — NHL results.
+- [Greco1899/scrape_ufc_stats](https://github.com/Greco1899/scrape_ufc_stats) — UFC results.

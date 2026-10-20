@@ -13,11 +13,13 @@
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[hidelinks]{hyperref}
 \usepackage{xurl}
+\usepackage[section]{placeins}
 \captionsetup{font=small,labelfont=bf}
 \setlength{\parskip}{0.4em}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
 
 \title{Who Beat Whom? A Weighted PageRank Ranking of Professional Tennis Players Compared with the ATP Ranking\\[0.4em]
-\large First draft}
+\large Second draft}
 \author{Chakib Madcur\\
 \small Department of Computer Science, Roosevelt University, Chicago, IL}
 \date{October 2026}
@@ -26,144 +28,185 @@
 \maketitle
 
 \begin{abstract}
-The official ATP ranking adds up points by tournament category and round reached; it does not ask whom a player beat. We study an alternative from network science. Each ATP season is represented as a directed, weighted graph in which every match is an edge from the loser to the winner, and players are ranked with a weighted PageRank (edge weight = number of wins over that opponent; node weight = matches won). Using 164{,}894 tour-level matches from 1973 to 2025, we compare the PageRank ranking with the ATP year-end ranking. We measure agreement with cosine similarity between the two score vectors and explain why cosine, rather than Euclidean distance, suits two scores on different scales. For the top 10, 50 and 100 players in 2015 and 2025, cosine similarity is 0.97--0.99, well above a random baseline of 0.35--0.78. Over 53 seasons, rank agreement was lower when the ATP ranked players by average results (1973--1989, mean Spearman 0.86) than under the best-of system used since 1990 (0.91), and it fell to 0.71 in 2020, when COVID-19 rules extended the ranking window. Applied to the 2025--26 English Premier League, the same method almost reproduces the final table (Spearman 0.97) and predicts it better than points do early in the season. We also outline a classification of five approaches to ranking in sports. The results suggest that very different ranking approaches converge on similar orders, and that network rankings are most informative when competitors meet only some of the possible opponents.
+The official ATP ranking adds up points according to the tournaments a player enters and the rounds he reaches; it does not consider whom he beat. This paper studies an alternative based on network science. Each ATP season is represented as a directed graph in which every match is a directed edge from the loser to the winner, weighted by the number of wins over that opponent, and players are ranked with weighted PageRank (WPR). We compare WPR with the official ATP ranking using Spearman's rank correlation and cosine similarity, follow the comparison across the seasons 1973--2025, and contrast WPR with standard (unweighted) PageRank. We then apply the same method to football, American football, basketball, ice hockey and mixed martial arts, and place it within a classification of the approaches used to rank competitors in sports.
 \end{abstract}
 
-\noindent\textbf{Keywords:} PageRank; network science; sports rankings; tennis; cosine similarity; Elo rating.
+\noindent\textbf{Keywords:} weighted PageRank; directed graphs; network science; sports rankings; tennis.
 
 %======================================================================
 \section{Introduction}
 
-Ranking players is central to professional tennis: the ranking decides who enters tournaments, who is seeded, and who is called the best in the world. The ATP ranking is a points system. A player receives fixed points for the round reached in each tournament, larger events give more points, and the best results of the last 52 weeks are added up \citep{wiki_atp}. Two players who reach the same round of the same event receive the same points, whether they beat the world number one or a qualifier on the way.
+The ATP ranking decides who enters tournaments, who is seeded, and who is called the best player in the world. It is a points system: a player receives fixed points for the round he reaches in each tournament, and the best results of the last 52 weeks are added up \citep{wiki_atp}. Two players who reach the same round of the same event receive the same points, whether they beat the world number one or a qualifier on the way.
 
-Network science offers a different view. A season of matches can be represented as a directed graph in which an edge points from the loser to the winner. In this graph a strong player is one who beats other strong players, which is exactly the idea behind PageRank, the algorithm originally used to rank web pages \citep{brin1998}. Radicchi applied a PageRank-type method to the history of professional tennis \citep{radicchi2011}, and later work compared PageRank-based rankings with the official ATP and WTA rankings \citep{dingle2013} and added time dependence \citep{motegi2012}. Other studies question whether PageRank improves on simple rankings in sports with complete schedules \citep{zhou2020}.
+Network science offers a different view. A season can be represented as a directed graph whose directed edges point from the loser of each match to the winner. In such a graph a strong player is one who beats other strong players, the idea behind PageRank \citep{brin1998}. In this paper the directed edges are weighted by the number of wins, and players are ranked with weighted PageRank (WPR).
 
-This work makes four contributions:
-\begin{enumerate}
-  \item A weighted PageRank for tennis in which edges carry the number of wins over an opponent and nodes carry the number of matches won, applied to every ATP season from 1973 to 2025.
-  \item A comparison of PageRank and ATP rankings as \emph{vectors} using cosine similarity, with an explanation of why cosine is preferred to Euclidean distance and how it relates to Spearman's rank correlation.
-  \item A historical analysis that relates changes in agreement to changes in the ATP ranking rules.
-  \item An application of the same method to a football league (Premier League 2025--26), together with a first classification of approaches to ranking in sports.
-\end{enumerate}
+The paper makes four contributions: (i) a comparison of WPR with the ATP ranking for every season from 1973 to 2025; (ii) a direct comparison of WPR with standard PageRank on the same directed graphs; (iii) an application of the same method to five other sports; and (iv) a first classification of approaches to ranking in sports.
+
+%======================================================================
+\section{Standard and weighted PageRank in sports}
+
+Standard PageRank, designed to rank web pages, gives every directed edge the same weight \citep{brin1998}. The name \emph{weighted PageRank} was first used for web pages, where Xing and Ghorbani weighted each link by the popularity of the pages it connects \citep{xing2004}. In sports, the weight of a directed edge usually comes from the results themselves:
+
+\begin{itemize}
+  \item \textbf{Tennis.} Radicchi built a directed, weighted network of all professional matches from 1968 to 2010, in which the weight of a directed edge is the number of times one player lost to another, and ranked players with a PageRank-type ``prestige score'' \citep{radicchi2011}. Dingle et al.\ compared the same method with the ATP and WTA rankings \citep{dingle2013}.
+  \item \textbf{American football.} Govan, Meyer and Albright weighted each directed edge by the score difference of the game and called this their first major generalization of PageRank \citep{govan2008}.
+  \item \textbf{Football.} Lazova and Basnarkov weighted directed edges between national teams by combinations of wins and goals \citep{lazova2015}.
+\end{itemize}
+
+Weighting directed edges by the number of wins is therefore not new: it is how Radicchi's tennis network was built. Studies that use a network ranking usually choose one weighting and do not show what the weights change. Section~\ref{sec:std-vs-wpr} compares standard PageRank and WPR directly, across 53 seasons and several sports, and Section~\ref{sec:importance} tests a less common weight, the importance of the match.
 
 %======================================================================
 \section{Approaches to ranking in sports}
 
-Sports use very different methods to order competitors. We group them into five approaches (Table~\ref{tab:approaches}). The classification is a first draft and is meant to place the network approach of this paper among the methods already in use.
+Table~\ref{tab:approaches} groups the methods used in sports into five approaches. Approaches 1 and 2 count results without looking at who the opponent was; approaches 3 and 4 take the opponent's strength into account; approach 5 has no direct opponent.
 
-\begin{table}[ht]
+\begin{table}[!htbp]
 \centering
 \small
-\caption{Five approaches to ranking in sports (first draft of a classification).}
+\caption{Five approaches to ranking in sports.}
 \label{tab:approaches}
-\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.2cm}@{}}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.1cm}LL@{}}
 \toprule
-Approach & How the order is decided & Examples & Uses opponent strength? \\
+Approach & Main idea & Examples \\
 \midrule
-1. League table & Points for each match result, summed over a season in which every team plays every other team & Premier League (3 points for a win, 1 for a draw) & No (balanced schedule) \\
-2. Accumulated tournament points & Fixed points by event category and round or place reached, summed over a time window & ATP and WTA rankings; UEFA club coefficients; ISU World Standings & No \\
-3. Elo-type ratings & A rating updated after every match by the difference between the actual and the expected result & FIDE chess ratings; FIFA Men's World Ranking since 2018; tennis Elo & Yes \\
-4. Network and linear-algebra ratings & One calculation over the whole graph of results (eigenvector, PageRank, linear systems) & Colley Matrix in the BCS (college football); PageRank in tennis (this paper) & Yes, recursively \\
-5. Judged performance scores & A panel scores each performance; the highest total wins the event & Figure skating (ISU Judging System); gymnastics & No (absolute score) \\
+1. League table & Points for each result over a season in which every team plays every other team & Premier League, NBA, NHL \\
+2. Tournament points & Fixed points by event and round reached, added up over a time window & ATP and WTA rankings; UEFA club coefficients; ISU World Standings \\
+3. Elo rating & A rating that moves after every match by the actual minus the expected result & FIDE chess ratings; FIFA Men's World Ranking since 2018 \\
+4. Network rating & One calculation over the whole directed graph of results & PageRank and WPR; Colley Matrix (college football) \\
+5. Judged score & Judges score each performance; the highest total wins & Figure skating; gymnastics \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\paragraph{1. League tables.} In a round-robin league every team plays every other team the same number of times, so a simple points table is a fair ranking. English football adopted three points for a win in 1981 and FIFA formally adopted the system in 1995 \citep{wiki_3pts}. The Premier League uses 3 points for a win and 1 for a draw over 38 matches.
+\paragraph{1. League tables.} When every team plays every other team the same number of times, a points table is a fair ranking. English football adopted three points for a win in 1981, and FIFA adopted the system in 1995 \citep{wiki_3pts}.
 
-\paragraph{2. Accumulated tournament points.} The ATP ranking belongs here. The first ATP rankings were published on 23 August 1973 and were based on each player's \emph{average} result. In 1990 they were replaced by a ``best of'' system that adds up a player's best 14 results; this became 18 results in 2000, and the last major overhaul of the points table was in 2009 \citep{wiki_atp}. Today a player's best 19 results count (plus the ATP Finals for qualified players), and points expire after 52 weeks \citep{wiki_atp}. During the COVID-19 pandemic the ranking was frozen on 16 March 2020 and then calculated from each player's best 18 results between March 2019 and December 2020 \citep{atp2020}; the traditional method resumed on 23 August 2021, and all pandemic adjustments ended on 15 August 2022 \citep{tennismajors2021}. The same family of methods is used outside tennis. UEFA club coefficients add up points from European competitions over the previous five seasons (2 points for a win, 1 for a draw, plus bonus points) and are used to seed the draws \citep{wiki_uefa}. The ISU World Standings in figure skating add up points from the current and the two previous seasons, with the oldest season counted at 70\%, and give 1{,}200 points to a world champion \citep{wiki_isuws}.
+\paragraph{2. Tournament points.} The ATP ranking belongs here. The first rankings, published on 23 August 1973, were based on each player's \emph{average} result. In 1990 they were replaced by a ``best of'' system that adds up a player's best 14 results; this became 18 results in 2000, and the last major overhaul of the points table was in 2009 \citep{wiki_atp}. Today a player's best 19 results count (plus the ATP Finals for qualified players), and points expire after 52 weeks \citep{wiki_atp}. During the COVID-19 pandemic the ranking was frozen on 16 March 2020 and then calculated from each player's best 18 results between March 2019 and December 2020 \citep{atp2020}; the usual method resumed on 23 August 2021, and all pandemic adjustments ended on 15 August 2022 \citep{tennismajors2021}. UEFA club coefficients add up points from European competitions over five seasons \citep{wiki_uefa}, and the ISU World Standings in figure skating add up points over three seasons \citep{wiki_isuws}.
 
-\paragraph{3. Elo-type ratings.} The Elo system was designed by Arpad Elo for chess \citep{elo1978} and adopted by FIDE in 1970 \citep{wiki_elo}. Before each match the rating difference gives an expected result $E$; afterwards the rating changes by $K(S-E)$, where $S$ is the actual result. A win over a stronger opponent therefore earns more than a win over a weaker one. FIFA has used an Elo-type method for its men's ranking since 16 August 2018: $P = P_{\text{before}} + I\,(W - W_e)$, where the importance $I$ ranges from 5 for friendlies outside international windows to 60 for World Cup matches from the quarter-finals on \citep{wiki_fifa}. In tennis, Elo is used by analysts rather than by the ATP. FiveThirtyEight introduced a tennis version in which $K$ shrinks with experience \citep{fivethirtyeight2016}, and it was among the most accurate prediction methods in a comparison of published models \citep{kovalchik2016,vaughanwilliams2020}.
+\paragraph{3. Elo ratings.} Arpad Elo designed his system for chess \citep{elo1978}, and FIDE adopted it in 1970 \citep{wiki_elo}. After each match a rating changes by $K(S-E)$, where $S$ is the actual and $E$ the expected result, so a win over a stronger opponent earns more. FIFA has used an Elo-type method for its men's ranking since 16 August 2018 \citep{wiki_fifa}. In tennis, Elo is used by analysts rather than by the ATP \citep{fivethirtyeight2016,kovalchik2016}. The ATP ranking is \emph{not} an Elo rating: its points depend on the tournament and the round reached, not on the strength of the opponents beaten (the only exception is the United Cup, where points per win depend on the opponent's ranking \citep{wiki_atp}).
 
-\emph{Is the ATP ranking based on the same approach as Elo?} No. ATP points depend only on the tournament category and the round reached, not on the strength of the opponents beaten (the only exception on the ATP calendar is the United Cup, where points per win depend on the opponent's ranking \citep{wiki_atp}). An Elo rating, in contrast, depends directly on opponent strength. The two are different approaches, which is why comparing them is informative.
+\paragraph{4. Network ratings.} These methods solve one problem over the whole directed graph of results: eigenvector methods \citep{keener1993}, direct and indirect wins \citep{park2005}, the Colley Matrix used in college football's Bowl Championship Series \citep{colley2002,wiki_colley}, and PageRank and WPR \citep{radicchi2011,govan2008,lazova2015}.
 
-\paragraph{4. Network and linear-algebra ratings.} These methods solve one problem over the whole graph of results. Keener ranked football teams with the Perron--Frobenius eigenvector \citep{keener1993}; Park and Newman counted direct and indirect wins in college football \citep{park2005}; and the Colley Matrix, which uses only wins and losses, was one of the computer rankings in college football's Bowl Championship Series from 2001 \citep{colley2002,wiki_colley}. PageRank belongs to this family and has been applied to tennis \citep{radicchi2011,dingle2013} and to national football teams \citep{lazova2015}.
+\paragraph{5. Judged scores.} In figure skating, competitors do not play each other. The ISU Judging System, used since 2004, scores each element as a base value plus a grade of execution and adds program component scores \citep{wiki_ijs}. Event results then feed the World Standings, so skating combines approaches 5 and 2.
 
-\paragraph{5. Judged performance scores.} In figure skating competitors do not play each other. The ISU Judging System, used since 2004, scores each element as a base value plus a grade of execution, adds program component scores and subtracts deductions; it replaced the earlier 6.0 placement system after the judging scandal at the 2002 Winter Olympics \citep{wiki_ijs}. Event results are then converted into World Standings points, so skating combines approaches 5 and 2.
-
-\paragraph{Competition format.} The format matters as much as the ranking method. In a \emph{round-robin league} (Premier League) all teams face the same opponents. In \emph{knockout tournaments} (tennis) a player who loses leaves the event, so over a season each player meets a different set of opponents. Many sports use a \emph{league followed by playoffs}, and the UEFA Champions League has used a \emph{league phase} since 2024--25 in which each of 36 teams plays 8 different opponents in a single table \citep{wiki_ucl}. When schedules are incomplete, the strength of the opponents differs from player to player, and methods that account for it (approaches 3 and 4) have more to add \citep{zhou2020}.
+\paragraph{Competition format.} Format matters as much as method. In a \emph{round-robin league} all teams face the same opponents. In \emph{knockout tournaments}, as in tennis, a player who loses leaves the event, so over a season each player meets a different set of opponents. Many sports use a \emph{league followed by playoffs}, and since 2024--25 the UEFA Champions League uses a \emph{league phase} in which each of 36 teams plays 8 different opponents \citep{wiki_ucl}. When schedules are incomplete, opponents differ from player to player, and approaches 3 and 4 have more to add \citep{zhou2020}.
 
 %======================================================================
 \section{Data}
 
-\paragraph{Tennis.} We use Jeff Sackmann's ATP dataset \citep{sackmann}, read from a public mirror of the repository. For each season from 1973 to 2025 we take all tour-level main-draw matches (Grand Slams, Masters 1000, ATP 500 and 250 events, and the ATP Finals) and remove Davis Cup ties, the Next Gen Finals exhibition, and walkovers. This gives 164{,}894 matches among 4{,}263 players. The 2025 season contains 2{,}655 matches, 292 players and 2{,}395 directed edges, of which 218 have weight 2 or more. As the official ranking we use the last ATP ranking of each calendar year (for example 29 December 2025). The dataset contains ranking points for the year-end ranking from 1996 on; for earlier years only the ranks are available.
+\paragraph{Tennis.} We use Jeff Sackmann's ATP dataset \citep{sackmann}. For each season from 1973 to 2025 we take all tour-level main-draw matches (Grand Slams, Masters 1000, ATP 500 and 250 events, the ATP Finals, and the 2024 Olympic event) and remove Davis Cup ties, the Next Gen Finals exhibition and walkovers: 164{,}894 matches among 4{,}263 players. The 2025 season has 2{,}655 matches, 292 players and 2{,}395 directed edges. The official ranking is the last ATP ranking of each calendar year; its points are available from 1996.
 
-\paragraph{Football.} For the 2025--26 Premier League we use the 380 match results from the \texttt{football-datasets} repository \citep{footballdatasets}. The league table computed from these results is identical to the official final table \citep{wiki_epl2526}: Arsenal won with 85 points, ahead of Manchester City with 78.
+\paragraph{Other sports.} Premier League 2025--26 (380 matches) \citep{footballdatasets}; NFL 2025 regular season (272 games) \citep{nflverse}; NBA 2025--26 regular season (1{,}230 games) \citep{hoopr}; NHL 2025--26 regular season (1{,}312 games) \citep{fastrhockey}, compared with the official points standings \citep{wiki_nhl2526}; and all decided UFC fights from 1994 to October 2026 (8{,}816 fights among 2{,}769 fighters) \citep{ufcdata}. We could not find an open, downloadable dataset of professional boxing results.
 
 %======================================================================
 \section{Methods}
 
-\subsection{Graph}
-For a season, each player is a node. For every match we add a directed edge from the loser to the winner; if the same player beats the same opponent again, the weight of that edge increases by one. A pair of players who beat each other is connected by two edges, one in each direction, each with its own number of wins (Figure~\ref{fig:h2h}). For football, a draw adds an edge of weight $0.5$ in each direction.
+\subsection{Directed graph}
+For a season, each player is a node. Every match adds a directed edge from the loser to the winner; if the same player beats the same opponent again, the weight of that directed edge increases by one. Two players who beat each other are joined by two directed edges, one in each direction, each with its own number of wins (Figure~\ref{fig:h2h}). In leagues with draws or ties, a draw adds a directed edge of weight $0.5$ in each direction. Standard PageRank uses the same directed graph with every weight set to 1.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.62\textwidth]{figures/top10_head_to_head_2025.png}
-\caption{Matches among the ATP top 10 of 2025. Each arrow points to the winner and the number on it is the number of wins; for example, Alcaraz beat Sinner four times and Sinner beat Alcaraz twice.}
+\includegraphics[width=0.6\textwidth]{figures/top10_head_to_head_2025.png}
+\caption{Directed graph of the matches among the ATP top 10 of 2025. Each directed edge points to the winner and its label is the number of wins.}
 \label{fig:h2h}
 \end{figure}
 
-\subsection{Weighted PageRank}
-Let $w_{ji}$ be the weight of the edge from $j$ to $i$, $s_j = \sum_i w_{ji}$ the total weight leaving $j$ (its losses), and $v_i$ the node weight, normalised so that $\sum_i v_i = 1$. We use $v_i \propto (\text{wins}_i + 1)$ for tennis and $v_i \propto (\text{wins}_i + \text{draws}_i/2 + 1)$ for football. The weighted PageRank score $\mathrm{PR}(i)$ solves
+\subsection{Weighted PageRank (WPR)}
+WPR is the long-run behaviour of a random walk on the directed graph. A walker starts at a random player. At each step, with probability $d$ it follows one of the directed edges leaving the current player, that is, it moves from a loser to a player who beat him, choosing each directed edge with probability proportional to its weight. With probability $1-d$ it jumps to a player chosen uniformly at random; it also jumps uniformly when the current player has no losses. The WPR score of a player is the fraction of time the walker spends at that player. Players beaten by strong players are therefore visited often, and so are the players who beat them.
+
+Let $w_{ji}$ be the weight of the directed edge from $j$ to $i$ (the number of times $i$ beat $j$), $s_j = \sum_i w_{ji}$ the total weight leaving $j$ (its losses), and $N$ the number of players. The WPR scores solve
 \begin{equation}
-\mathrm{PR}(i) = (1-d)\,v_i \;+\; d\sum_{j:\,w_{ji}>0} \mathrm{PR}(j)\,\frac{w_{ji}}{s_j} \;+\; d\,v_i \sum_{j:\,s_j=0} \mathrm{PR}(j),
+\mathrm{WPR}(i) = \frac{1-d}{N} \;+\; d\sum_{j:\,w_{ji}>0} \mathrm{WPR}(j)\,\frac{w_{ji}}{s_j} \;+\; \frac{d}{N} \sum_{j:\,s_j=0} \mathrm{WPR}(j).
 \end{equation}
-with damping factor $d = 0.85$. Each player passes their score to the players who beat them in proportion to the edge weights; players without losses share their score according to the node weights. We implemented the power iteration directly and checked it against NetworkX \citep{hagberg2008} (largest difference $10^{-11}$).
+We use $d = 0.85$, the value of the original PageRank \citep{brin1998}. All players have the same restart probability $1/N$; there are no node weights. We compute WPR by power iteration and check it against NetworkX \citep{hagberg2008} (largest difference $8\times10^{-12}$).
 
 \subsection{Comparing two rankings}
-For the ATP top $N$ players we build two vectors of length $N$: their ATP points $\mathbf{a}$ and their PageRank scores $\mathbf{p}$, computed on the full season graph. We compare them with cosine similarity \citep{manning2008},
+Spearman's rank correlation $\rho$ \citep{spearman1904} is the measure most often used to compare two rankings, and it is our main measure. It compares the \emph{order} of the players. We also report cosine similarity \citep{manning2008}, which compares the \emph{scores}: for the ATP top $N$ we build the vector $\mathbf{a}$ of ATP points and the vector $\mathbf{p}$ of WPR scores and compute
 \begin{equation}
 \cos(\mathbf{a},\mathbf{p}) = \frac{\mathbf{a}\cdot\mathbf{p}}{\lVert\mathbf{a}\rVert\,\lVert\mathbf{p}\rVert}.
 \end{equation}
 
-\paragraph{Why cosine similarity and not Euclidean distance.} ATP points are in the thousands (12{,}050 for Alcaraz in 2025), while PageRank scores are probabilities that sum to one (0.0589 for Alcaraz). The Euclidean distance $\lVert\mathbf{a}-\mathbf{p}\rVert$ is therefore almost entirely the size of the ATP numbers (about 20{,}000 for the top 10) and says nothing about agreement. Cosine similarity ignores the length of each vector and compares only the relations between players, so it is unchanged if either system multiplies all its scores by a constant. It also stays between 0 and 1 for positive vectors, so values for different $N$ can be compared, whereas Euclidean distance grows with the number of dimensions. Finally, after both vectors are scaled to length one, the Euclidean distance becomes $\sqrt{2(1-\cos)}$ and carries exactly the same information as cosine.
+\paragraph{Why cosine similarity and not Euclidean distance.} ATP points are in the thousands (12{,}050 for Alcaraz in 2025), while WPR scores are probabilities that sum to one (0.0489 for Alcaraz). The Euclidean distance between the raw vectors (about 20{,}000 for the top 10) mostly measures the size of the ATP numbers. Cosine similarity ignores the length of each vector and compares only the relations between players; it stays between 0 and 1 for positive vectors, so values for different $N$ can be compared. After both vectors are scaled to length one, Euclidean distance equals $\sqrt{2(1-\cos)}$ and carries the same information. Because all scores are positive, cosine is always positive, so we also report a random baseline: the mean cosine over 2{,}000 random permutations of $\mathbf{p}$.
 
-\paragraph{Random baseline.} Because all points and scores are positive, cosine similarity is always positive and can be high even for unrelated rankings. We therefore report a baseline: the mean cosine over 2{,}000 random permutations of $\mathbf{p}$ among the same players.
-
-\paragraph{Relation to Spearman's rank correlation.} Our earlier comparisons used Spearman's rank correlation $\rho$ \citep{spearman1904}, which compares orders rather than scores. With rank vectors $\mathbf{r}_a$ and $\mathbf{r}_p$ and no ties,
+\paragraph{Relation between the two measures.} With rank vectors $\mathbf{r}_a$, $\mathbf{r}_p$ and no ties,
 \begin{equation}
 \rho = 1 - \frac{6\sum_k (r_{a,k} - r_{p,k})^2}{n(n^2-1)} = \cos\big(\mathbf{r}_a - \bar r,\; \mathbf{r}_p - \bar r\big),
 \end{equation}
-so Spearman's $\rho$ is both a rescaled squared Euclidean distance between the two rank vectors and the cosine similarity of the rank vectors after subtracting their mean. Spearman gives every position the same weight; cosine on scores gives more weight to the players with the largest scores.
+so Spearman's $\rho$ is both a rescaled squared Euclidean distance between rank vectors and the cosine of the rank vectors after subtracting their mean.
 
 %======================================================================
 \section{Results}
 
-\subsection{PageRank and ATP in one season}
-Table~\ref{tab:top10} shows the top 10 of 2025 by weighted PageRank. Eight of the ten players are also in the ATP top 10, and the top two are the same. The largest differences are Alexander Bublik (6th by PageRank, 11th by ATP) and Ji\v{r}\'i Leh\v{c}ka (9th and 18th).
+\subsection{WPR and the ATP ranking in one season}
+Table~\ref{tab:top10} shows the top 10 of 2025 by WPR. Eight of the ten are also in the ATP top 10, and the top two are the same. The largest differences are Alexander Bublik (4th by WPR, 11th by ATP) and Ji\v{r}\'i Leh\v{c}ka (9th and 18th). WPR also separates players with equal ATP points: in 2025, Brandon Nakashima and Stefanos Tsitsipas both finished with 1{,}380 points, and WPR places them 30th and 51st; in 2015, Ivo Karlovi\'c and Ga\"el Monfils both had 1{,}485 points, and WPR places Karlovi\'c 6th, because he beat Djokovic, Wawrinka and Berdych.
 
-\begin{table}[ht]
+\begin{table}[!htbp]
 \centering
 \small
-\caption{Top 10 by weighted PageRank, 2025 season.}
+\caption{Top 10 by WPR, 2025 season, with the ATP year-end rank and the standard PageRank rank of the same players.}
 \label{tab:top10}
 \begin{tabular}{@{}rlrr@{}}
 \toprule
-PageRank & Player & ATP year-end rank & Matches won \\
+WPR & Player & ATP rank & Standard PageRank rank \\
 \midrule
-1 & Carlos Alcaraz & 1 & 71 \\
-2 & Jannik Sinner & 2 & 58 \\
-3 & Taylor Fritz & 6 & 52 \\
-4 & Alexander Zverev & 3 & 55 \\
-5 & Novak Djokovic & 4 & 39 \\
-6 & Alexander Bublik & 11 & 37 \\
-7 & Felix Auger-Aliassime & 5 & 50 \\
-8 & Alex de Minaur & 7 & 54 \\
-9 & Ji\v{r}\'i Leh\v{c}ka & 18 & 38 \\
-10 & Jack Draper & 10 & 30 \\
+1 & Carlos Alcaraz & 1 & 1 \\
+2 & Jannik Sinner & 2 & 2 \\
+3 & Taylor Fritz & 6 & 4 \\
+4 & Alexander Bublik & 11 & 3 \\
+5 & Novak Djokovic & 4 & 6 \\
+6 & Alexander Zverev & 3 & 9 \\
+7 & Felix Auger-Aliassime & 5 & 5 \\
+8 & Alex de Minaur & 7 & 7 \\
+9 & Ji\v{r}\'i Leh\v{c}ka & 18 & 10 \\
+10 & Jack Draper & 10 & 12 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-PageRank also separates players with equal ATP points. In 2025, Brandon Nakashima and Stefanos Tsitsipas both finished with 1{,}380 points; PageRank places Nakashima 29th and Tsitsipas 46th (32--29 and 21--17 win--loss records). In 2015, Ivo Karlovi\'c and Ga\"el Monfils both had 1{,}485 points; PageRank places Karlovi\'c 6th because he beat Djokovic, Wawrinka and Berdych.
+\subsection{Standard PageRank and WPR}
+\label{sec:std-vs-wpr}
+Standard PageRank ignores how many times a player won. Consider four players: A beat B three times and lost to B once, A beat C three times and lost to C once, B and C beat each other once, and B also beat D. Standard PageRank sees one directed edge in each direction between A and B and between A and C, as if both head-to-heads were 1--1, and ranks B first (scores: B 0.336, A 0.313, C 0.313, D 0.038). WPR uses the 3--1 records and ranks A first (A 0.398, B 0.296, C 0.269, D 0.038).
 
-\subsection{\texorpdfstring{Cosine similarity for $N$ players}{Cosine similarity for N players}}
-Table~\ref{tab:cosine} and Figure~\ref{fig:cosine} show cosine similarity for $N$ from 2 to 100. For $N \ge 10$ the cosine is 0.97--0.99 in both seasons, while the random baseline falls from 0.72--0.78 at $N=10$ to 0.35--0.50 at $N=100$. With only two players the comparison is not informative: the baseline is already 0.91 (2015) and 0.99 (2025).
+The same thing happens with real data. In 2015 Djokovic went 81--6 at tour level, beat Wawrinka three times and lost to him once, and lost three of his six matches to Federer. Standard PageRank ranks Wawrinka first; WPR ranks Djokovic first, as the ATP did.
 
-\begin{table}[ht]
+\begin{table}[!htbp]
 \centering
 \small
-\caption{Cosine similarity between ATP points and weighted PageRank scores for the ATP top $N$. In 2015 one top-100 player played no tour-level match and is left out.}
+\caption{Agreement with the ATP ranking: standard PageRank and WPR.}
+\label{tab:stdwpr}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+ & & \multicolumn{2}{c}{Spearman $\rho$} & \multicolumn{2}{c}{Cosine similarity} \\
+\cmidrule(lr){3-4}\cmidrule(l){5-6}
+Season & Players & Standard & WPR & Standard & WPR \\
+\midrule
+2015 & Top 10 & 0.879 & 0.952 & 0.928 & 0.978 \\
+     & Top 50 & 0.807 & 0.849 & 0.880 & 0.966 \\
+     & Top 100 & 0.928 & 0.936 & 0.877 & 0.964 \\
+\addlinespace
+2025 & Top 10 & 0.794 & 0.879 & 0.952 & 0.986 \\
+     & Top 50 & 0.860 & 0.853 & 0.901 & 0.966 \\
+     & Top 100 & 0.917 & 0.919 & 0.896 & 0.962 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Across all seasons (Figure~\ref{fig:stdwpr}), WPR has a higher cosine similarity with the ATP points than standard PageRank in all 30 seasons from 1996 to 2025 (mean 0.963 against 0.925), and it picks the ATP's year-end number one in 24 of 53 seasons against 17. Spearman's $\rho$ is almost the same (mean 0.885 against 0.883, higher for WPR in 35 of 53 seasons): the weights matter most at the top of the ranking, where players meet each other repeatedly.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/wpr_vs_standard.png}
+\caption{Cosine similarity with ATP points (top 100) for WPR and standard PageRank, 1996--2025.}
+\label{fig:stdwpr}
+\end{figure}
+
+\FloatBarrier
+\subsection{Agreement for different numbers of players}
+Table~\ref{tab:cosine} and Figure~\ref{fig:cosine} show cosine similarity between ATP points and WPR scores for the ATP top $N$. For $N \ge 10$ it is 0.96--0.99 in both seasons, while the random baseline falls from 0.73--0.78 at $N=10$ to 0.38--0.53 at $N=100$. With two players the comparison is not informative: the baseline is already 0.91 (2015) and 0.99 (2025). Table~\ref{tab:spearman} confirms the relation between Spearman's $\rho$ and cosine numerically.
+
+\begin{table}[!htbp]
+\centering
+\small
+\caption{Cosine similarity between ATP points and WPR scores for the ATP top $N$ (in 2015 one top-100 player played no tour-level match).}
 \label{tab:cosine}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
@@ -171,161 +214,172 @@ Table~\ref{tab:cosine} and Figure~\ref{fig:cosine} show cosine similarity for $N
 \cmidrule(lr){2-3}\cmidrule(l){4-5}
 Players & Cosine & Random baseline & Cosine & Random baseline \\
 \midrule
-Top 2 & 1.000 & 0.910 & 0.990 & 0.986 \\
-Top 5 & 0.977 & 0.858 & 0.992 & 0.827 \\
-Top 10 & 0.977 & 0.721 & 0.988 & 0.780 \\
-Top 20 & 0.977 & 0.583 & 0.980 & 0.733 \\
-Top 50 & 0.968 & 0.468 & 0.972 & 0.616 \\
-Top 100 & 0.965 & 0.353 & 0.969 & 0.502 \\
+Top 2 & 1.000 & 0.912 & 0.989 & 0.985 \\
+Top 5 & 0.977 & 0.861 & 0.991 & 0.829 \\
+Top 10 & 0.978 & 0.727 & 0.986 & 0.784 \\
+Top 20 & 0.977 & 0.595 & 0.977 & 0.741 \\
+Top 50 & 0.966 & 0.489 & 0.966 & 0.632 \\
+Top 100 & 0.964 & 0.379 & 0.962 & 0.525 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.78\textwidth]{figures/cosine_by_N.png}
-\caption{Cosine similarity between ATP points and weighted PageRank scores (solid) and the random baseline (dashed) as the number of players grows.}
+\includegraphics[width=0.75\textwidth]{figures/cosine_by_N.png}
+\caption{Cosine similarity between ATP points and WPR scores (solid) and the random baseline (dashed).}
 \label{fig:cosine}
 \end{figure}
 
-Table~\ref{tab:spearman} connects these results to our earlier table. For 2015, Spearman's $\rho$, the centred cosine of the rank vectors and the Euclidean formula give identical values, confirming that the earlier measure was a rank correlation. Cosine on the scores is higher, especially for $N=50$, because the players at the top, who carry the largest scores, agree most.
-
-\begin{table}[ht]
+\begin{table}[!htbp]
 \centering
 \small
-\caption{Three equivalent forms of Spearman's $\rho$ and cosine on scores, PageRank vs ATP, 2015.}
+\caption{Three equal forms of Spearman's $\rho$, and cosine on scores, WPR against ATP, 2015.}
 \label{tab:spearman}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 Players & Spearman $\rho$ & Centred cosine of ranks & $1-6\sum d^2/(n(n^2-1))$ & Cosine of scores \\
 \midrule
-Top 10 & 0.976 & 0.976 & 0.976 & 0.977 \\
-Top 50 & 0.850 & 0.850 & 0.850 & 0.968 \\
-Top 100 & 0.935 & 0.935 & 0.935 & 0.965 \\
+Top 10 & 0.952 & 0.952 & 0.952 & 0.978 \\
+Top 50 & 0.849 & 0.849 & 0.849 & 0.966 \\
+Top 100 & 0.936 & 0.936 & 0.936 & 0.964 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\FloatBarrier
 \subsection{Agreement through time}
-Figure~\ref{fig:time} repeats the comparison for the ATP top 100 in every season from 1973 to 2025. Rank agreement was lower in 1973--1989, when the ATP ranked players by their average results (mean Spearman 0.857), than in 1990--2019 under the best-of system (0.911). The change coincides with the 1990 rule change, but 1990 also marks the start of the ATP Tour, so the data alone cannot separate the two. Cosine similarity, available from 1996, averages 0.966. The clearest drop is 2020 (Spearman 0.708): the year-end ranking covered results from March 2019 to December 2020, while the PageRank graph contains only the shortened 2020 season. Agreement recovered as the normal rules returned (0.826 in 2021, 0.922 in 2022).
+Figure~\ref{fig:time} repeats the comparison for the ATP top 100 in every season. Agreement was lower in 1973--1989, when the ATP ranked players by their average results (mean Spearman 0.848), than in 1990--2019 under the best-of system (0.910). The change coincides with the 1990 rule change, but 1990 is also when the ATP Tour began, so the data cannot separate the two. The clearest drop is 2020 (0.700): the year-end ranking covered March 2019 to December 2020, while the directed graph contains only the shortened 2020 season. Table~\ref{tab:seasons} lists selected seasons.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{figures/agreement_through_time.png}
-\caption{Agreement between weighted PageRank and the ATP year-end ranking (top 100) for every season. Dotted lines mark changes to the ATP ranking rules.}
+\caption{Agreement between WPR and the ATP year-end ranking (top 100) for every season. Dotted lines mark changes to the ATP ranking rules.}
 \label{fig:time}
 \end{figure}
 
-\begin{table}[ht]
+\begin{table}[!htbp]
 \centering
 \small
 \caption{Selected seasons: year-end number one in each system and agreement for the top 100.}
 \label{tab:seasons}
 \begin{tabular}{@{}rllrrr@{}}
 \toprule
-Season & ATP \#1 & PageRank \#1 & Top-10 overlap & Spearman & Cosine \\
+Season & ATP \#1 & WPR \#1 & Top-10 overlap & Spearman & Cosine \\
 \midrule
-1975 & Jimmy Connors & Arthur Ashe & 8 & 0.911 & -- \\
-1978 & Jimmy Connors & Bj\"orn Borg & 7 & 0.825 & -- \\
-1985 & Ivan Lendl & Ivan Lendl & 8 & 0.858 & -- \\
-1990 & Stefan Edberg & Stefan Edberg & 8 & 0.942 & -- \\
-1995 & Pete Sampras & Pete Sampras & 9 & 0.899 & -- \\
-2005 & Roger Federer & Roger Federer & 8 & 0.908 & 0.977 \\
-2010 & Rafael Nadal & Roger Federer & 8 & 0.925 & 0.945 \\
-2015 & Novak Djokovic & Novak Djokovic & 8 & 0.935 & 0.965 \\
-2020 & Novak Djokovic & Novak Djokovic & 8 & 0.708 & 0.914 \\
-2022 & Carlos Alcaraz & Felix Auger-Aliassime & 9 & 0.922 & 0.958 \\
-2025 & Carlos Alcaraz & Carlos Alcaraz & 8 & 0.918 & 0.969 \\
+1975 & Jimmy Connors & Arthur Ashe & 8 & 0.909 & -- \\
+1978 & Jimmy Connors & Bj\"orn Borg & 7 & 0.821 & -- \\
+1985 & Ivan Lendl & Ivan Lendl & 8 & 0.849 & -- \\
+1990 & Stefan Edberg & Stefan Edberg & 8 & 0.940 & -- \\
+1995 & Pete Sampras & Pete Sampras & 9 & 0.901 & -- \\
+2005 & Roger Federer & Roger Federer & 7 & 0.905 & 0.977 \\
+2010 & Rafael Nadal & Rafael Nadal & 8 & 0.929 & 0.937 \\
+2015 & Novak Djokovic & Novak Djokovic & 8 & 0.936 & 0.964 \\
+2020 & Novak Djokovic & Novak Djokovic & 8 & 0.700 & 0.913 \\
+2022 & Carlos Alcaraz & Felix Auger-Aliassime & 9 & 0.921 & 0.953 \\
+2025 & Carlos Alcaraz & Carlos Alcaraz & 8 & 0.919 & 0.962 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\FloatBarrier
 \subsection{Comparison with Elo}
-Table~\ref{tab:elo} compares weighted PageRank and an Elo rating (tennis version with $K = 250/(m+5)^{0.4}$, run on all tour-level matches since 2005) with the ATP ranking. PageRank is closer to the ATP ranking than Elo is, especially in 2025. Elo is built on a player's whole career and does not drop players who stop competing; for example, Arthur Fils is 9th by Elo but 39th in the ATP after playing no tour-level match after July 2025. Used to predict the winners of the first half of the following season, the three systems perform almost equally (Table~\ref{tab:predict}), with Elo slightly ahead in both years.
+Table~\ref{tab:elo} adds an Elo rating (tennis version with $K = 250/(m+5)^{0.4}$, run on all tour-level matches since 2005). WPR is closer to the ATP ranking than Elo, especially in 2025: Elo is built on a player's whole career and does not drop players who stop competing. Used to predict the winners of the first half of the next season, the year-end rankings perform almost equally (Table~\ref{tab:predict}).
 
-\begin{table}[ht]
+\begin{table}[!htbp]
 \centering
 \small
-\caption{Spearman's $\rho$ between each system and the ATP year-end ranking.}
+\caption{Spearman's $\rho$ between each ranking and the ATP year-end ranking.}
 \label{tab:elo}
 \begin{tabular}{@{}llrrr@{}}
 \toprule
 Season & Comparison & Top 10 & Top 50 & Top 100 \\
 \midrule
-2015 & PageRank vs ATP & 0.98 & 0.85 & 0.93 \\
-     & Elo vs ATP      & 0.93 & 0.88 & 0.90 \\
+2015 & WPR vs ATP & 0.95 & 0.85 & 0.94 \\
+     & Standard PageRank vs ATP & 0.88 & 0.81 & 0.93 \\
+     & Elo vs ATP & 0.93 & 0.88 & 0.90 \\
 \addlinespace
-2025 & PageRank vs ATP & 0.89 & 0.87 & 0.92 \\
-     & Elo vs ATP      & 0.67 & 0.72 & 0.79 \\
+2025 & WPR vs ATP & 0.88 & 0.85 & 0.92 \\
+     & Standard PageRank vs ATP & 0.79 & 0.86 & 0.92 \\
+     & Elo vs ATP & 0.67 & 0.72 & 0.79 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{table}[ht]
+\begin{table}[!htbp]
 \centering
 \small
-\caption{Share of matches in the first half of the next season (January--June) whose winner each year-end ranking predicted (the higher-ranked player is predicted to win).}
+\caption{Share of matches in January--June of the next season whose winner each year-end ranking predicted (the higher-ranked player is predicted to win).}
 \label{tab:predict}
-\begin{tabular}{@{}lrrrr@{}}
+\begin{tabular}{@{}lrrrrr@{}}
 \toprule
-Matches predicted & Number & ATP ranking & Elo & Weighted PageRank \\
+Matches predicted & Number & ATP & Elo & WPR & Standard PageRank \\
 \midrule
-January--June 2016 & 1{,}509 & 67.1\% & 67.7\% & 66.8\% \\
-January--June 2026 & 1{,}202 & 63.7\% & 64.9\% & 63.6\% \\
+January--June 2016 & 1{,}509 & 67.1\% & 67.7\% & 66.8\% & 66.1\% \\
+January--June 2026 & 1{,}202 & 63.7\% & 64.9\% & 63.1\% & 63.1\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Premier League 2025--26}
-Applied to the Premier League, weighted PageRank almost reproduces the final table (Table~\ref{tab:epl}; Spearman 0.965, cosine between points and scores 0.997 against a baseline of 0.923). The main difference is at the top: PageRank ranks Manchester City first and champions Arsenal second. City did better against the other top-six teams (5 wins, 2 draws, 3 losses against Arsenal's 3--2--5) and took four points from Arsenal (1--1 and 2--1), while Arsenal won the league by collecting more points against the rest.
+\FloatBarrier
+\subsection{Other sports}
+Table~\ref{tab:leagues} applies WPR to four leagues. WPR is close to the final standings where every team plays every other team (NBA, Premier League, NHL). In the NFL, where teams meet only 45\% of the possible opponents, it differs more: it ranks the 12--5 Los Angeles Rams first and the 14--3 New England Patriots 11th, because the Patriots beat only one team with a winning record while the Rams beat five. In the Premier League, WPR ranks Manchester City first and champions Arsenal second, because City did better against the other top-six teams (5 wins, 2 draws, 3 losses against Arsenal's 3--2--5). In all four leagues standard PageRank is further from the standings than WPR, by 0.01 in the NFL and by up to 0.16 in the Premier League: where teams meet the same opponent several times, standard PageRank counts each pair only once.
 
-\begin{table}[ht]
+\begin{table}[!htbp]
 \centering
 \small
-\caption{Premier League 2025--26: final position and weighted PageRank rank.}
-\label{tab:epl}
-\begin{tabular}{@{}rlrr@{\hspace{2.5em}}rlrr@{}}
+\caption{WPR and standard PageRank against the final standings (Spearman $\rho$). ``Pairs met'' is the share of all possible pairs of teams that played each other.}
+\label{tab:leagues}
+\begin{tabular}{@{}lrrrrr@{}}
 \toprule
-Pos & Team & Pts & PageRank & Pos & Team & Pts & PageRank \\
+League & Teams & Games per team & Pairs met & WPR & Standard \\
 \midrule
-1 & Arsenal & 85 & 2 & 11 & Fulham & 52 & 15 \\
-2 & Manchester City & 78 & 1 & 12 & Newcastle & 49 & 13 \\
-3 & Manchester United & 71 & 3 & 13 & Everton & 49 & 11 \\
-4 & Aston Villa & 65 & 4 & 14 & Leeds & 47 & 12 \\
-5 & Liverpool & 60 & 6 & 15 & Crystal Palace & 45 & 17 \\
-6 & Bournemouth & 57 & 5 & 16 & Nottingham Forest & 44 & 14 \\
-7 & Sunderland & 54 & 8 & 17 & Tottenham & 41 & 16 \\
-8 & Brighton & 53 & 9 & 18 & West Ham & 39 & 18 \\
-9 & Brentford & 53 & 7 & 19 & Burnley & 22 & 20 \\
-10 & Chelsea & 52 & 10 & 20 & Wolves & 20 & 19 \\
+Premier League 2025--26 & 20 & 38 & 100\% & 0.956 & 0.799 \\
+NFL 2025 & 32 & 17 & 45\% & 0.888 & 0.880 \\
+NBA 2025--26 & 30 & 82 & 100\% & 0.962 & 0.876 \\
+NHL 2025--26 (official points) & 32 & 82 & 100\% & 0.875 & 0.815 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-To test when PageRank helps in a league, we computed both rankings from the results after about 5, 10 and 19 games per team and compared each with the final table. After about 5 games (50 matches), PageRank predicted the final order better than points (Spearman 0.550 vs 0.382); after 10 games the two were equal (0.802 vs 0.796); after 19 games points were better (0.832 vs 0.792).
+UFC shows the limits of the method. Fighters meet only 0.22\% of the possible opponents, and many great fighters have a single loss. A fighter with one loss passes all of his score to the one opponent who beat him, so Matt Hamill (10--5) ranks 5th of all time because he holds Jon Jones' only UFC loss, a disqualification in 2009, and Adriano Martins (4--3) ranks 3rd because he holds Islam Makhachev's only UFC loss. In a very sparse directed graph, one upset can move a large share of the score \citep{zhou2020}.
+
+\FloatBarrier
+\subsection{Weights beyond win counts}
+\label{sec:importance}
+As a first step beyond win counts, we weighted each win by the importance of the match (Grand Slam 2, Masters 1000 and ATP Finals 1.5, other events 1). This raised the cosine similarity with ATP points in all 30 seasons from 1996 to 2025 (mean 0.975 against 0.963), while Spearman's $\rho$ hardly changed (0.904 against 0.901). The gain is partly expected, because ATP points also reward bigger tournaments.
 
 %======================================================================
 \section{Discussion}
 
-\paragraph{Different approaches can give the same ranking.} PageRank uses only who beat whom in one season; the ATP ranking uses a table of points by tournament and round. The two methods share no formula, yet the cosine similarity of their score vectors lies between 0.94 and 0.98 in every season since 1996 except 2020 (0.91). The reason is that strong players both go deep in big tournaments and beat strong opponents, so both methods see the same signal. Elo, a third approach, also agrees with the ATP ranking at the top, although less closely.
+\paragraph{Different approaches can give the same ranking.} WPR uses only who beat whom in one season; the ATP ranking uses a table of points by tournament and round. The two share no formula, yet their Spearman correlation for the top 100 lies between 0.80 and 0.94 in every season except 2020. Strong players both go deep in big tournaments and beat strong opponents, so both methods see the same signal.
 
-\paragraph{The disagreements are informative.} Where the methods differ, the reason is usually visible: players with equal points but different opponents, players who stopped competing (Elo), and years when the rules changed (2020). The historical analysis shows that agreement depends on the rules of the official ranking: it was lower under the averaging system and fell sharply under the COVID-19 rules.
+\paragraph{Weights matter.} WPR agrees with the ATP ranking more closely than standard PageRank, and the difference is largest at the top of the ranking and in leagues where teams meet repeatedly. Counting each head-to-head only once can change who is first, as the 2015 Djokovic--Wawrinka example shows.
 
-\paragraph{Leagues and tournaments.} In a complete round-robin league every team faces the same schedule, so points already account for opponent strength and PageRank adds little by the end of the season. Early in the season, when each team has met only a few opponents, PageRank predicted the final table better than points. This agrees with the finding that PageRank helps most when only a small fraction of all possible games has been played \citep{zhou2020}, which is the normal situation in tennis.
+\paragraph{The disagreements are informative.} Where WPR and the ATP ranking differ, the reason is usually visible: players with equal points but different opponents, NFL teams with easy schedules, and years when the ATP rules changed (2020). Where WPR fails, as in the UFC, the reason is also visible: too few contests per competitor.
 
-\paragraph{Choice of measure.} Cosine similarity is suited to comparing scores on different scales, but because the vectors are positive it needs a baseline and at least about ten players to be informative. Spearman's $\rho$ weights every position equally and is better for questions about order in the middle of the ranking. We report both.
+\paragraph{Limitations.} Each directed graph covers one calendar season, while the ATP ranking also counts Challenger results and only a player's best results. The damping factor and the importance weights are chosen, not learned. The other sports cover one season each. Several facts in Section~3 are taken from Wikipedia and should be replaced by official rulebooks.
 
-\paragraph{Limitations.} Each graph covers one calendar season, while the ATP ranking also counts Challenger results and only a player's best results. The node weights (matches won) and the damping factor ($d=0.85$) are chosen, not learned. Davis Cup matches are excluded. The football analysis covers a single season. Several background facts in Section~2 are taken from Wikipedia and should be replaced by official rulebooks in a later draft.
+%======================================================================
+\section{Future work}
 
-\paragraph{Future work.} (i) Learn the edge and node weights from data instead of choosing them; (ii) add time decay so that recent matches count more \citep{motegi2012}; (iii) extend the comparison to other sports and formats, for example by turning each figure-skating event into pairwise ``wins'' between skaters so that PageRank can be applied to a sport without head-to-head matches.
+\begin{itemize}
+  \item \textbf{When is WPR better than the ATP ranking?} Identify the situations in which each method gives the more sensible ranking, for example players returning from injury, players with few but strong wins, and surfaces.
+  \item \textbf{Learned weights.} Learn the edge weights (tournament, round, surface, score, recency) from data instead of choosing them, including AI-based approaches.
+  \item \textbf{Time.} Let older matches count less, so that the directed graph can span more than one season \citep{motegi2012}.
+  \item \textbf{More sports.} Turn each figure-skating event into pairwise results between skaters, so that WPR can be applied to a sport without head-to-head matches, and find open data for boxing.
+\end{itemize}
 
 %======================================================================
 \section{Conclusion}
 
-A weighted PageRank built only from who beat whom produces rankings that are very close to the official ATP ranking, with a cosine similarity between 0.94 and 0.98 for the top 100 in every season since 1996 except 2020, far above chance. The agreement depends on the rules of the official ranking, and the cases where the two rankings disagree explain something real about the players. The same method nearly reproduces a football league table, and is most useful when competitors have met only some of their possible opponents, which is the normal situation in tennis.
+Weighted PageRank built only from who beat whom gives rankings close to the official ATP ranking, closer than standard PageRank, and the cases where the two differ explain something real about the players. The same method nearly reproduces league tables in football, basketball and hockey, differs more in the NFL, where schedules are incomplete, and breaks down in the UFC, where competitors meet too few opponents.
+
+\section*{Acknowledgments}
+The author thanks Professor Evgeny Dantsin (Roosevelt University) for his guidance and feedback throughout this project.
 
 \section*{Code and data availability}
-All programs, notebooks and references used in this paper are collected in the project repository: \url{https://github.com/ChakibMadcur/tennis-pagerank-research}.
+All programs, notebooks and references are available at \url{https://github.com/ChakibMadcur/tennis-pagerank-research}.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
