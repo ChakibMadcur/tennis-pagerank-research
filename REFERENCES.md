@@ -30,6 +30,14 @@
 - Tennis Majors (2021). [ATP Tour ranking points to be added and dropped as per traditional method starting August 23](https://tennismajors.com/atp/atp-tour-ranking-points-to-be-added-and-dropped-as-per-traditional-method-starting-august-23-443662.html). 5 August 2021.
 - Wikipedia: [ATP rankings](https://en.wikipedia.org/wiki/ATP_rankings) · [FIFA Men's World Ranking](https://en.wikipedia.org/wiki/FIFA_Men%27s_World_Ranking) · [UEFA coefficient](https://en.wikipedia.org/wiki/UEFA_coefficient) · [Elo rating system](https://en.wikipedia.org/wiki/Elo_rating_system) · [Three points for a win](https://en.wikipedia.org/wiki/Three_points_for_a_win) · [ISU Judging System](https://en.wikipedia.org/wiki/ISU_Judging_System) · [ISU World Standings](https://en.wikipedia.org/wiki/ISU_World_Standings_and_Season%27s_World_Ranking) · [Colley Matrix](https://en.wikipedia.org/wiki/Colley_Matrix) · [2024–25 UEFA Champions League](https://en.wikipedia.org/wiki/2024%E2%80%9325_UEFA_Champions_League) · [2025–26 Premier League](https://en.wikipedia.org/wiki/2025%E2%80%9326_Premier_League) · [2025–26 NHL season](https://en.wikipedia.org/wiki/2025%E2%80%9326_NHL_season)
 
+## Added 27 October 2026 (prior work on weighted PageRank in tennis, ranking rules)
+- Aronson, A. (2017). [“TenisRank”: A new ranking of tennis players based on PageRank](https://arxiv.org/abs/1711.11122). Bachelor's thesis, University of Buenos Aires (2015); arXiv:1711.11122.
+- Needham, M. (2018). [Finding the best tennis players of all time using Weighted PageRank](https://medium.com/neo4j/finding-the-best-tennis-players-of-all-time-using-weighted-pagerank-6950ed5fc98e). Neo4j Developer Blog.
+- Michieli, U. (2018). [Complex network analysis of men single ATP tennis matches](https://arxiv.org/abs/1804.08138). arXiv:1804.08138.
+- Asztalos, B., Balázs, B., Palla, G., et al., Vicsek, T. (2026). [Hierarchy and ranking in fencing and tennis](https://www.nature.com/articles/s41598-026-53459-7). *Scientific Reports*, 16, 24877.
+- ATP (2024). [2024 ATP points table](https://www.itftennis.com/media/11846/2024-atp-points-table.pdf). Published by the ITF.
+- GiveMeSport (2024). [FIFA men's world rankings, 18 July 2024](https://www.givemesport.com/fifa-world-rankings/). Accessed 27 October 2026.
+
 ## Data
 - Sackmann, J. [tennis_atp: ATP Tennis Rankings, Results, and Stats](https://github.com/JeffSackmann/tennis_atp). CC BY-NC-SA 4.0.
 - [datasets/football-datasets](https://github.com/datasets/football-datasets) — Premier League results.
@@ -37,3 +45,5 @@
 - [sportsdataverse/hoopR-nba-data](https://github.com/sportsdataverse/hoopR-nba-data) — NBA results.
 - [sportsdataverse/fastRhockey-nhl-data](https://github.com/sportsdataverse/fastRhockey-nhl-data) — NHL results.
 - [Greco1899/scrape_ufc_stats](https://github.com/Greco1899/scrape_ufc_stats) — UFC results.
+- Sackmann, J. [tennis_wta: WTA Tennis Rankings, Results, and Stats](https://github.com/JeffSackmann/tennis_wta). CC BY-NC-SA 4.0.
+- Jürisoo, M. [martj42/international_results](https://github.com/martj42/international_results) — international football results.

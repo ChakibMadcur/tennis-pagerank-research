@@ -5,3 +5,4 @@ networkx>=3.2      # tested 3.6.1
 scipy>=1.11        # tested 1.18.1
 matplotlib>=3.8    # tested 3.11.2
 jupyter
+pyarrow            # reads the NBA/NHL parquet files
