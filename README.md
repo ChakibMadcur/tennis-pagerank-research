@@ -15,6 +15,7 @@ Each season is turned into a **directed graph**: every player is a node and ever
 | Notebook 3 · cosine similarity vs Euclidean, history 1973–2025, Premier League | [notebooks/03_cosine_history_premier_league.ipynb](notebooks/03_cosine_history_premier_league.ipynb) |
 | Notebook 4 · standard PageRank vs WPR, Elo, NFL, NBA, NHL, UFC, match-importance weights | [notebooks/04_standard_vs_weighted_other_sports.ipynb](notebooks/04_standard_vs_weighted_other_sports.ipynb) |
 | Notebook 5 · is WPR better than standard PageRank (1973–2025), the #100-beats-#1 experiment, who gains and loses (incl. location), women's tennis, table by sport and ranking style | [notebooks/05_weighted_vs_standard_upsets_sports.ipynb](notebooks/05_weighted_vs_standard_upsets_sports.ipynb) |
+| Notebook 6 · percentage of match results consistent with each ranking (ATP vs weighted vs standard PageRank, 1973–2025, men and women) | [notebooks/06_percent_consistent_with_ranking.ipynb](notebooks/06_percent_consistent_with_ranking.ipynb) |
 | New results section (written separately, 27 Oct 2026), with proposed title and abstract | [paper/new_section/section.pdf](paper/new_section/section.pdf) · [LaTeX](paper/new_section/section.tex) |
 | Where to present and publish (conference and journal guide) | [docs/Conference_and_Journal_Guide.pdf](docs/Conference_and_Journal_Guide.pdf) |
 | First feasibility test (September 2026, plain PageRank) | [scripts/pilot_2025.py](scripts/pilot_2025.py) |
@@ -34,6 +35,7 @@ Notebooks 1 and 2 used node weights (matches won); from Notebook 3 on, as agreed
 - **One upset:** if the ATP #100 beats the #1, he gains about 60 places in WPR but 12 in the ATP ranking. The value of a win is the beaten player's score divided by how often he loses.
 - **Who loses under WPR:** players whose ATP points come from one deep run, from Challenger events, or from weaker regional fields (South American players: −2 places on average).
 - **Across sports:** weighting by wins matters where the same opponents meet repeatedly (Premier League 0.96 vs 0.80) and hardly at all in tennis.
+- **Results consistent with the ranking (Notebook 6):** of the matches between two top-100 players, the higher-ranked player won 67.1% of the time under the ATP year-end ranking and 66.4% under weighted PageRank (women: 69.4% vs 68.6%). Among the top 10 and top 20 they are tied, and since 1990 the men's gap (0.2 points) is not significant. About one match in four is an upset under any order; the order that fits a season best predicts the next season worse.
 - **Prior work:** weighted PageRank in tennis is not new (Radicchi 2011; Dingle et al. 2013). What is new here is the side-by-side comparison of weighted and standard PageRank over 50+ seasons and across sports.
 
 ## How to run
