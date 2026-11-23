@@ -1,42 +1,45 @@
-# Weighted PageRank in Professional Tennis
+# Weighted PageRank and Official Rankings in Tennis and Other Sports
 
-**Chakib Madcur** · MS Computer Science, Roosevelt University · Research project, Fall 2026 – Spring 2027
+**Chakib Madcur** · MS Computer Science, Roosevelt University · Research project, Fall 2026 – Spring 2027 · Advisor: Prof. Evgeny Dantsin
 
-Each season is turned into a **directed graph**: every player is a node and every match is a **directed edge from the loser to the winner**, weighted by the number of wins over that opponent. Players are ranked with **weighted PageRank (WPR)**, and the result is compared with the **official ATP ranking**, with **standard PageRank**, with **Elo**, through history (1973–2025), and in other sports (Premier League, NFL, NBA, NHL, UFC).
+Each season is turned into a **directed network**: every player or team is a node and every match is a **link from the loser to the winner**, weighted by the number of wins. Competitors are ranked with **weighted PageRank (WPR)**, and the result is compared with the **official rankings** in three ways: how well correlated the two rankings are, which one better predicts the next season's matches, and what their differences reveal about each ranking rule. The data cover five decades of men's (ATP, 1973–2025) and women's (WTA, 1984–2025) professional tennis, international football, the Premier League, the NBA, the NHL and the NFL.
 
 ## Everything in this repository
 
 | What | Link |
 |---|---|
-| Paper, second draft (PDF) | [paper/paper.pdf](paper/paper.pdf) |
+| **Paper, third draft (PDF)**, November 2026 | [paper/paper.pdf](paper/paper.pdf) |
 | Paper source (LaTeX, opens in Overleaf) | [paper/paper.tex](paper/paper.tex) · [paper/references.bib](paper/references.bib) · [paper/figures/](paper/figures) |
-| Notebook 1 · directed graph, edge weights, WPR program (2025) | [notebooks/01_weighted_pagerank_2025.ipynb](notebooks/01_weighted_pagerank_2025.ipynb) |
+| **Title and abstract** (one page) | [abstracts/abstract_and_title.pdf](abstracts/abstract_and_title.pdf) · [LaTeX](abstracts/abstract_and_title.tex) |
+| NetSci / NERCCS one-page abstract with figure | [abstracts/netsci_one_page.pdf](abstracts/netsci_one_page.pdf) · [LaTeX](abstracts/netsci_one_page.tex) · [figure.pdf](abstracts/figure.pdf) |
+| SDSS two-page extended abstract (anonymous, for review) | [abstracts/sdss_extended_abstract_blinded.pdf](abstracts/sdss_extended_abstract_blinded.pdf) · [LaTeX](abstracts/sdss_extended_abstract_blinded.tex) |
+| All abstract versions as text (main, short, long, plain-language, bio) | [abstracts/abstract_texts.py](abstracts/abstract_texts.py) |
+| **Conference submission kit** (titles, abstracts, author details, deadlines, which file to send where) | [docs/Conference_Submission_Kit.pdf](docs/Conference_Submission_Kit.pdf) · [Word](docs/Conference_Submission_Kit.docx) |
+| CST presentation: slides and talk script | [docs/Presentation_Slides.pdf](docs/Presentation_Slides.pdf) · [docs/Presentation_Script.pdf](docs/Presentation_Script.pdf) |
+| Notebook 1 · directed network, link weights, WPR program (2025) | [notebooks/01_weighted_pagerank_2025.ipynb](notebooks/01_weighted_pagerank_2025.ipynb) |
 | Notebook 2 · head-to-head wins, top 10/50/100, 2015 vs 2025, Elo, equal ATP points | [notebooks/02_head_to_head_top_n_elo.ipynb](notebooks/02_head_to_head_top_n_elo.ipynb) |
-| Notebook 3 · cosine similarity vs Euclidean, history 1973–2025, Premier League | [notebooks/03_cosine_history_premier_league.ipynb](notebooks/03_cosine_history_premier_league.ipynb) |
-| Notebook 4 · standard PageRank vs WPR, Elo, NFL, NBA, NHL, UFC, match-importance weights | [notebooks/04_standard_vs_weighted_other_sports.ipynb](notebooks/04_standard_vs_weighted_other_sports.ipynb) |
-| Notebook 5 · is WPR better than standard PageRank (1973–2025), the #100-beats-#1 experiment, who gains and loses (incl. location), women's tennis, table by sport and ranking style | [notebooks/05_weighted_vs_standard_upsets_sports.ipynb](notebooks/05_weighted_vs_standard_upsets_sports.ipynb) |
-| Notebook 6 · percentage of match results consistent with each ranking (ATP vs weighted vs standard PageRank, 1973–2025, men and women) | [notebooks/06_percent_consistent_with_ranking.ipynb](notebooks/06_percent_consistent_with_ranking.ipynb) |
-| New results section (written separately, 27 Oct 2026), with proposed title and abstract | [paper/new_section/section.pdf](paper/new_section/section.pdf) · [LaTeX](paper/new_section/section.tex) |
-| Where to present and publish (conference and journal guide) | [docs/Conference_and_Journal_Guide.pdf](docs/Conference_and_Journal_Guide.pdf) |
-| First feasibility test (September 2026, plain PageRank) | [scripts/pilot_2025.py](scripts/pilot_2025.py) |
+| Notebook 3 · history 1973–2025, Premier League | [notebooks/03_cosine_history_premier_league.ipynb](notebooks/03_cosine_history_premier_league.ipynb) |
+| Notebook 4 · NFL, NBA, NHL, UFC | [notebooks/04_standard_vs_weighted_other_sports.ipynb](notebooks/04_standard_vs_weighted_other_sports.ipynb) |
+| Notebook 5 · the #100-beats-#1 experiment, who gains and loses (incl. location), women's tennis, table by sport | [notebooks/05_weighted_vs_standard_upsets_sports.ipynb](notebooks/05_weighted_vs_standard_upsets_sports.ipynb) |
+| Notebook 6 · percentage of match results consistent with each ranking (1973–2025, men and women) | [notebooks/06_percent_consistent_with_ranking.ipynb](notebooks/06_percent_consistent_with_ranking.ipynb) |
+| **Notebook 7 · which ranking predicts better: last season's official ranking vs last season's WPR, on the next season's matches** (tennis 1974–2026 and five other competitions) | [notebooks/07_prediction_official_vs_pagerank.ipynb](notebooks/07_prediction_official_vs_pagerank.ipynb) |
+| Earlier results section (27 Oct 2026; superseded by the third draft) | [paper/new_section/section.pdf](paper/new_section/section.pdf) |
+| Where to present and publish (conference and journal guide, October) | [docs/Conference_and_Journal_Guide.pdf](docs/Conference_and_Journal_Guide.pdf) |
+| First feasibility test (September 2026) | [scripts/pilot_2025.py](scripts/pilot_2025.py) |
 | Half page on the Elo rating | [docs/Elo_Rating_in_Tennis.docx](docs/Elo_Rating_in_Tennis.docx) |
 | All references with links | [REFERENCES.md](REFERENCES.md) |
 | Data sources and licenses | [data/README.md](data/README.md) |
 
-Notebooks 1 and 2 used node weights (matches won); from Notebook 3 on, as agreed on 14 October, there are **no node weights**: every player has the same restart probability and only the directed edges are weighted.
+Notes on earlier notebooks: Notebooks 1 and 2 used node weights; from Notebook 3 on there are no node weights (every player has the same restart probability, only links are weighted). Notebooks 3–6 also contain comparisons with standard (unweighted) PageRank and cosine similarity; these were exploratory and are **not part of the paper**, which compares only the official ranking and weighted PageRank, with Spearman's rank correlation as the one coefficient.
 
-## Main results so far
+## Main results so far (third draft)
 
-- **WPR and the ATP ranking agree closely.** For the ATP top 10, 50 and 100 (2015 and 2025): Spearman 0.85–0.95, cosine 0.96–0.99, against a random cosine baseline of 0.38–0.78.
-- **WPR agrees with the ATP more than standard PageRank** in all 30 seasons from 1996 to 2025 (cosine 0.963 vs 0.925). Standard PageRank ignores how many times a player won; in 2015 it ranks Wawrinka above Djokovic.
-- **Agreement depends on the ATP rules:** mean Spearman 0.85 under the 1973–1989 averaging system, 0.91 under the best-of system since 1990, and 0.70 in 2020 (COVID-19 rules).
-- **Other sports:** WPR is close to the final standings in the Premier League, NBA and NHL (0.88–0.96), differs more in the NFL, where teams meet only 45% of the possible opponents, and breaks down in the UFC, where one upset can move a fighter near the top.
-- **Is WPR better? (Notebook 5, Spearman only)** WPR agrees with the official ranking slightly better than standard PageRank (men 0.885 vs 0.883, better in 34 of 53 seasons; women 0.904 vs 0.903, 31 of 42). For predicting next-season matches, WPR, standard PageRank and the ATP ranking are tied at about 64%; for women the WTA ranking is slightly better.
-- **One upset:** if the ATP #100 beats the #1, he gains about 60 places in WPR but 12 in the ATP ranking. The value of a win is the beaten player's score divided by how often he loses.
-- **Who loses under WPR:** players whose ATP points come from one deep run, from Challenger events, or from weaker regional fields (South American players: −2 places on average).
-- **Across sports:** weighting by wins matters where the same opponents meet repeatedly (Premier League 0.96 vs 0.80) and hardly at all in tennis.
-- **Results consistent with the ranking (Notebook 6):** of the matches between two top-100 players, the higher-ranked player won 67.1% of the time under the ATP year-end ranking and 66.4% under weighted PageRank (women: 69.4% vs 68.6%). Among the top 10 and top 20 they are tied, and since 1990 the men's gap (0.2 points) is not significant. About one match in four is an upset under any order; the order that fits a season best predicts the next season worse.
-- **Prior work:** weighted PageRank in tennis is not new (Radicchi 2011; Dingle et al. 2013). What is new here is the side-by-side comparison of weighted and standard PageRank over 50+ seasons and across sports.
+- **Well correlated.** Mean Spearman correlation between WPR and the official year-end ranking (top 100): 0.885 for men (1973–2025) and 0.907 for women (1984–2025); 0.88–0.96 in the leagues and 0.95 in international football. It was lower under the ATP's 1973–1989 averaging system (0.85) than under the best-of system since 1990 (0.91), and lowest in 2020 when the rankings were frozen (0.71).
+- **Equal predictability (Notebook 7).** Last season's ranking predicts this season's matches: men 64.4% (ATP) vs 64.5% (WPR) over 52 seasons; the official ranking was better before 1990, WPR slightly better since 1991 (21 of 35 seasons). Women: WTA 65.0% vs WPR 64.5% (WTA better in 33 of 41 seasons). The two rankings pick the same winner in about 9 matches of 10. Other sports (one season each): small differences in both directions.
+- **Consistency with the season's results (Notebook 6).** Of the matches between two top-100 players, 67.1% agree with the ATP order and 66.4% with the WPR order (women 69.4% vs 68.6%); tied among the top 10 and top 20. The order that fits one season best predicts the next season worse, so the next-season test is the fair one.
+- **One upset.** If the 2025 ATP #100 beats Alcaraz or Sinner, he gains 64 or 61 places under WPR but 12 under ATP points. The value of a win follows the beaten player's score divided by his number of losses.
+- **Who loses under WPR.** Players whose ATP points come from one deep run, from Challenger events, or from weaker regional fields (South American players: −2 places on average).
+- **Prior work.** Weighted PageRank in tennis is not new (Radicchi 2011; Dingle et al. 2013). What is new here is the systematic comparison with the official rankings over five decades and across sports, the predictability test, and the explanation of the disagreements.
 
 ## How to run
 
@@ -52,4 +55,4 @@ jupyter notebook notebooks/
 
 ## Data
 
-Tennis: Jeff Sackmann, [tennis_atp](https://github.com/JeffSackmann/tennis_atp) (CC BY-NC-SA 4.0). Other sports: see [data/README.md](data/README.md). No data files are stored in this repository, except one small list: [data/fifa_ranking_2024_07_18.csv](data/fifa_ranking_2024_07_18.csv).
+Tennis: Jeff Sackmann, [tennis_atp](https://github.com/JeffSackmann/tennis_atp) and [tennis_wta](https://github.com/JeffSackmann/tennis_wta) (CC BY-NC-SA 4.0). Other sports: see [data/README.md](data/README.md). No data files are stored in this repository, except one small list: [data/fifa_ranking_2024_07_18.csv](data/fifa_ranking_2024_07_18.csv).
